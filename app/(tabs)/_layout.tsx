@@ -48,14 +48,14 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="forme"
+        name="forMe"
         options={{
           title: 'For Me',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="heart.fill" color={color} />,
         }}
       />
       <Tabs.Screen
-        name="myprofile"
+        name="myProfile"
         options={{
           title: 'My Profile',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="person.fill" color={color} />,

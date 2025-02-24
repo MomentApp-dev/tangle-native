@@ -6,21 +6,14 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Button, VStack } from "native-base";
 import { FeedEvent } from "../../components/FeedEvent";
+import { FeedFlatList } from '@/components/FeedFlatList';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#8c7b7b ', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }
-    >
-      <FeedEvent title= "Hello World" description="hello hello hello world" host="kapka6700"/>
-      <FeedEvent title= "Hello World"/>
-    </ParallaxScrollView>
+    <SafeAreaView>
+      <FeedFlatList/>
+    </SafeAreaView>
   );
 }
 
