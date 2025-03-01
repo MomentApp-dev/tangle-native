@@ -1,18 +1,18 @@
 export function generateFlatListData(): FeedDataItem[] {
     return [
         {
-            title: "Hello World",
-            description: "Hello world",
-            host: "hosted by kabirkapur"
+            title: "Fun event",
+            description: "An awesome fun event hosted by your best friend! Bring drinks and shit",
+            host: "@kabirkapur"
         }, 
         {
             title: "Hello World",
             description: "Hello world",
-            host: "hosted by kabirkapur"
+            host: "@kabirkapur"
         },
         {
             title: "gay sex orgy",
-            host: "corykum"
+            host: "@corykum"
         }
     ];
 }
