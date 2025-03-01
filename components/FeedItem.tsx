@@ -1,0 +1,220 @@
+import React from 'react';
+import { View, Text, StyleSheet, Pressable, Platform, Image } from 'react-native';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+
+import { FeedEvent } from '../types/feed';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { Colors } from '@/constants/Colors';
+
+interface FeedItemProps {
+  /** The event data to display */
+  item: FeedEvent;
+  /** Optional callback when the item is pressed */
+  onPress?: () => void;
+}
+
+/**
+ * Formats the host name by removing any prefixes
+ * @param host - The raw host name from the data
+ * @returns Cleaned host name for display
+ */
+function formatHostName(host: string): string {
+  return host.replace('hosted by ', '');
+}
+
+/**
+ * FeedItem displays a single event in the feed with a Twitter-like design
+ * Features:
+ * - Custom avatar for specific users (e.g., Cory's mustache)
+ * - Generated avatars for other users
+ * - Event details with title and description
+ * - Interactive elements (RSVP, share, bookmark)
+ */
+export function FeedItem({ item, onPress }: FeedItemProps) {
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme ?? 'light'];
+  const hostName = formatHostName(item.host);
+  const isCorykum = hostName.toLowerCase() === 'corykum';
+
+  /**
+   * Renders the appropriate avatar based on the host
+   * - Custom mustache icon for Cory
+   * - Generated avatar for other users
+   */
+  const renderAvatar = () => {
+    if (isCorykum) {
+      return (
+        <View style={[styles.avatar, { backgroundColor: colors.icon }, styles.mustacheContainer]}>
+          <MaterialCommunityIcons name="mustache" size={24} color={colors.background} />
+        </View>
+      );
+    }
+    return (
+      <Image 
+        source={{ uri: `https://ui-avatars.com/api/?name=${hostName}&background=random` }}
+        style={styles.avatar}
+      />
+    );
+  };
+
+  return (
+    <Pressable 
+      style={[styles.container, { backgroundColor: colors.background }]} 
+      onPress={onPress}
+    >
+      {/* Avatar Section */}
+      <View style={styles.avatarContainer}>
+        {renderAvatar()}
+      </View>
+
+      {/* Content Section */}
+      <View style={styles.content}>
+        {/* Host Information */}
+        <View style={styles.header}>
+          <Text style={[styles.hostName, { color: colors.text }]} numberOfLines={1}>
+            {hostName}
+          </Text>
+          <Ionicons 
+            name="checkmark-circle" 
+            size={16} 
+            color="#1D9BF0" 
+            style={styles.verifiedBadge}
+          />
+          <Text style={[styles.eventLabel, { color: colors.icon }]}>
+            is hosting an event
+          </Text>
+        </View>
+
+        {/* Event Information */}
+        <Text style={[styles.title, { color: colors.text }]}>
+          {item.title}
+        </Text>
+        
+        {item.description && (
+          <Text style={[styles.description, { color: colors.text }]}>
+            {item.description}
+          </Text>
+        )}
+
+        {/* Interactive Elements */}
+        <View style={styles.actions}>
+          <Pressable style={styles.actionItem}>
+            <View style={[styles.rsvpButton, { backgroundColor: colors.text }]}>
+              <Ionicons 
+                name="calendar-outline" 
+                size={16} 
+                color={colors.background} 
+                style={styles.rsvpIcon}
+              />
+              <Text style={[styles.rsvpText, { color: colors.background }]}>
+                RSVP
+              </Text>
+            </View>
+          </Pressable>
+          <View style={styles.actionItem}>
+            <Ionicons name="share-social-outline" size={20} color={colors.icon} />
+          </View>
+          <View style={styles.actionItem}>
+            <Ionicons name="bookmark-outline" size={20} color={colors.icon} />
+          </View>
+        </View>
+      </View>
+    </Pressable>
+  );
+}
+
+const styles = StyleSheet.create({
+  // Main container layout
+  container: {
+    flexDirection: 'row',
+    padding: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#38444d',
+  },
+  content: {
+    flex: 1,
+  },
+
+  // Avatar configuration
+  avatarContainer: {
+    marginRight: 12,
+  },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#ccc',
+  },
+  mustacheContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  // Header section styling
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  hostName: {
+    fontSize: 15,
+    fontWeight: 'bold',
+  },
+  verifiedBadge: {
+    marginHorizontal: 4,
+  },
+  eventLabel: {
+    fontSize: 15,
+  },
+
+  // Event content styling
+  title: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 4,
+    lineHeight: 20,
+  },
+  description: {
+    fontSize: 15,
+    lineHeight: 20,
+    marginBottom: 12,
+  },
+
+  // Interactive elements styling
+  actions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 12,
+    justifyContent: 'space-between',
+    paddingRight: 32,
+  },
+  actionItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  rsvpButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.2,
+        shadowRadius: 1,
+      },
+      android: {
+        elevation: 2,
+      },
+    }),
+  },
+  rsvpIcon: {
+    marginRight: 6,
+  },
+  rsvpText: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+}); 

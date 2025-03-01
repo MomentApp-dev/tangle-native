@@ -1,8 +1,24 @@
-export function generateFlatListData(): FeedDataItem[] {
-    return [
+import { FeedEvent } from '../types/feed';
+
+/**
+ * Mock data generator for the event feed
+ * @returns Array of FeedEvent objects
+ * 
+ * In a production environment, this would be replaced with:
+ * - API calls to a backend service
+ * - Data transformation layer
+ * - Proper error handling
+ */
+export function generateFlatListData(): FeedEvent[] {
+    const data: FeedEvent[] = [
         {
-            title: "Fun event",
-            description: "An awesome fun event hosted by your best friend! Bring drinks and shit",
+            title: "Code sesh for app that makes a lot of money",
+            description: "Coding",
+            host: "@jdog"
+        },
+        {
+            title: "Hello World",
+            description: "Hello world",
             host: "@kabirkapur"
         }, 
         {
@@ -12,11 +28,18 @@ export function generateFlatListData(): FeedDataItem[] {
         },
         {
             title: "gay sex orgy",
+            description: "dick and balls",
             host: "@corykum"
         }
     ];
+
+    return data;
 }
 
+/**
+ * Type definition for feed data items
+ * @deprecated Use FeedEvent from '../types/feed' instead
+ */
 export type FeedDataItem = {
     title: string;
     host: string;
