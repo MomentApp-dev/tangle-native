@@ -1,5 +1,9 @@
-export interface FeedItem {
+export interface FeedItemData {
   id: string;
+  title: string;
+  description?: string;
+  host: string;
+  isHost: boolean;
   author: {
     id: string;
     name: string;
@@ -26,8 +30,10 @@ export interface FeedItem {
   };
 }
 
-export interface FeedEvent {
+export interface FeedEventData {
   title: string;
   description?: string;
   host: string;
+  date?: Date;
+  isHost: boolean;
 } 

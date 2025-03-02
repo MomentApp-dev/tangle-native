@@ -1,4 +1,4 @@
-import { FeedEvent } from '../types/feed';
+import { FeedEventData } from '../types/feed';
 
 /**
  * Mock data generator for the event feed
@@ -9,27 +9,56 @@ import { FeedEvent } from '../types/feed';
  * - Data transformation layer
  * - Proper error handling
  */
-export function generateFlatListData(): FeedEvent[] {
-    const data: FeedEvent[] = [
+export function generateFlatListData(): FeedEventData[] {
+    const data: FeedEventData[] = [
         {
             title: "Code sesh for app that makes a lot of money",
             description: "Coding",
-            host: "@jdog"
+            host: "@jdog",
+            isHost: true
         },
         {
             title: "Hello World",
             description: "Hello world",
-            host: "@kabirkapur"
+            host: "@kabirkapur",
+            isHost: false
         }, 
         {
             title: "Hello World",
             description: "Hello world",
-            host: "@kabirkapur"
+            host: "@kabirkapur",
+            isHost: false
         },
         {
             title: "gay sex orgy",
             description: "dick and balls",
-            host: "@corykum"
+            host: "@corykum",
+            isHost: true
+        },
+        {
+            title: "Code sesh for app that makes a lot of money",
+            description: "Coding",
+            host: "@jdog",
+            isHost: true
+        },
+        {
+            title: "Hello World",
+            description: "Hello world",
+            host: "@kabirkapur",
+            isHost: false
+        }, 
+        {
+            title: "Hello World",
+            description: "Hello world",
+            host: "@kabirkapur",
+            isHost: false
+        },
+        {
+            title: "gay sex orgy",
+            description: "dick and balls",
+            host: "@corykum",
+            isHost: true
+
         }
     ];
 

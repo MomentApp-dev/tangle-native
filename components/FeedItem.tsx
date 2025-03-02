@@ -2,13 +2,14 @@ import React from 'react';
 import { View, Text, StyleSheet, Pressable, Platform, Image } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
-import { FeedEvent } from '../types/feed';
+import { FeedEventData } from '../types/feed';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
+import { propsFlattener } from 'native-base/lib/typescript/hooks/useThemeProps/propsFlattener';
 
 interface FeedItemProps {
   /** The event data to display */
-  item: FeedEvent;
+  item: FeedEventData;
   /** Optional callback when the item is pressed */
   onPress?: () => void;
 }
@@ -34,7 +35,7 @@ export function FeedItem({ item, onPress }: FeedItemProps) {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const hostName = formatHostName(item.host);
-  const isCorykum = hostName.toLowerCase() === 'corykum';
+  const isHost = item.isHost
 
   /**
    * Renders the appropriate avatar based on the host
@@ -42,13 +43,6 @@ export function FeedItem({ item, onPress }: FeedItemProps) {
    * - Generated avatar for other users
    */
   const renderAvatar = () => {
-    if (isCorykum) {
-      return (
-        <View style={[styles.avatar, { backgroundColor: colors.icon }, styles.mustacheContainer]}>
-          <MaterialCommunityIcons name="mustache" size={24} color={colors.background} />
-        </View>
-      );
-    }
     return (
       <Image 
         source={{ uri: `https://ui-avatars.com/api/?name=${hostName}&background=random` }}
@@ -80,9 +74,16 @@ export function FeedItem({ item, onPress }: FeedItemProps) {
             color="#1D9BF0" 
             style={styles.verifiedBadge}
           />
-          <Text style={[styles.eventLabel, { color: colors.icon }]}>
-            is hosting an event
+          {
+            isHost && <Text style={[styles.eventLabel, { color: colors.icon }]}>
+              is hosting an event
+            </Text>
+          }
+          {
+            !isHost && <Text style={[styles.eventLabel, { color: colors.icon }]}>
+            is attending an event
           </Text>
+          }
         </View>
 
         {/* Event Information */}
