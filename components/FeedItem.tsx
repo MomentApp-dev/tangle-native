@@ -1,17 +1,17 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import { View, Text, StyleSheet, Pressable, Platform, Image } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
-import { FeedEventData } from '../types/feed';
+import { FeedEventData, MomentData } from '../types/feed';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { propsFlattener } from 'native-base/lib/typescript/hooks/useThemeProps/propsFlattener';
 
 interface FeedItemProps {
   /** The event data to display */
-  item: FeedEventData;
+  item: MomentData;
   /** Optional callback when the item is pressed */
-  onPress?: () => void;
+  onPress: (item: MomentData) => void;
 }
 
 /**
@@ -23,10 +23,19 @@ function formatHostName(host: string): string {
   return host.replace('hosted by ', '');
 }
 
+export const UserContext = React.createContext({
+  metadata: {
+    createdAt: '',
+    going: 0,
+    interested: 0,
+    notGoing: 0,
+    views: 0,
+  }
+});
+
 /**
  * FeedItem displays a single event in the feed with a Twitter-like design
  * Features:
- * - Custom avatar for specific users (e.g., Cory's mustache)
  * - Generated avatars for other users
  * - Event details with title and description
  * - Interactive elements (RSVP, share, bookmark)
@@ -34,8 +43,13 @@ function formatHostName(host: string): string {
 export function FeedItem({ item, onPress }: FeedItemProps) {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
-  const hostName = formatHostName(item.host);
-  const isHost = item.isHost
+  const hostName = formatHostName(item.host.username);
+  const isHost = item.isHost;
+  const [metadata, setMetadata] = useState(item.metadata);
+
+  const handlePress = () => {
+    onPress(item);
+  };
 
   /**
    * Renders the appropriate avatar based on the host
@@ -52,75 +66,77 @@ export function FeedItem({ item, onPress }: FeedItemProps) {
   };
 
   return (
-    <Pressable 
-      style={[styles.container, { backgroundColor: colors.background }]} 
-      onPress={onPress}
-    >
-      {/* Avatar Section */}
-      <View style={styles.avatarContainer}>
-        {renderAvatar()}
-      </View>
+    <UserContext.Provider value={{ metadata: metadata }}>
+      <Pressable 
+        style={[styles.container, { backgroundColor: colors.background }]} 
+        onPress={handlePress}
+      >
+        {/* Avatar Section */}
+        <View style={styles.avatarContainer}>
+          {renderAvatar()}
+        </View>
 
-      {/* Content Section */}
-      <View style={styles.content}>
-        {/* Host Information */}
-        <View style={styles.header}>
-          <Text style={[styles.hostName, { color: colors.text }]} numberOfLines={1}>
-            {hostName}
-          </Text>
-          <Ionicons 
-            name="checkmark-circle" 
-            size={16} 
-            color="#1D9BF0" 
-            style={styles.verifiedBadge}
-          />
-          {
-            isHost && <Text style={[styles.eventLabel, { color: colors.icon }]}>
-              is hosting an event
+        {/* Content Section */}
+        <View style={styles.content}>
+          {/* Host Information */}
+          <View style={styles.header}>
+            <Text style={[styles.hostName, { color: colors.text }]} numberOfLines={1}>
+              {hostName}
             </Text>
-          }
-          {
-            !isHost && <Text style={[styles.eventLabel, { color: colors.icon }]}>
-            is attending an event
-          </Text>
-          }
-        </View>
-
-        {/* Event Information */}
-        <Text style={[styles.title, { color: colors.text }]}>
-          {item.title}
-        </Text>
-        
-        {item.description && (
-          <Text style={[styles.description, { color: colors.text }]}>
-            {item.description}
-          </Text>
-        )}
-
-        {/* Interactive Elements */}
-        <View style={styles.actions}>
-          <Pressable style={styles.actionItem}>
-            <View style={[styles.rsvpButton, { backgroundColor: colors.text }]}>
-              <Ionicons 
-                name="calendar-outline" 
-                size={16} 
-                color={colors.background} 
-                style={styles.rsvpIcon}
-              />
-              <Text style={[styles.rsvpText, { color: colors.background }]}>
-                RSVP
+            <Ionicons 
+              name="checkmark-circle" 
+              size={16} 
+              color="#1D9BF0" 
+              style={styles.verifiedBadge}
+            />
+            {
+              isHost && <Text style={[styles.eventLabel, { color: colors.icon }]}>
+                is hosting an event
               </Text>
-            </View>
-          </Pressable>
-          <View style={styles.actionItem}>
-            <Ionicons name="share-social-outline" size={20} color={colors.icon} />
+            }
+            {
+              !isHost && <Text style={[styles.eventLabel, { color: colors.icon }]}>
+              is attending an event
+            </Text>
+            }
           </View>
-          <View style={styles.actionItem}>
-            <Ionicons name="bookmark-outline" size={20} color={colors.icon} />
+
+          {/* Event Information */}
+          <Text style={[styles.title, { color: colors.text }]}>
+            {item.title}
+          </Text>
+          
+          {item.description && (
+            <Text style={[styles.description, { color: colors.text }]}>
+              {item.description}
+            </Text>
+          )}
+
+          {/* Interactive Elements */}
+          <View style={styles.actions}>
+            <Pressable style={styles.actionItem}>
+              <View style={[styles.rsvpButton, { backgroundColor: colors.text }]}>
+                <Ionicons 
+                  name="calendar-outline" 
+                  size={16} 
+                  color={colors.background} 
+                  style={styles.rsvpIcon}
+                />
+                <Text style={[styles.rsvpText, { color: colors.background }]}>
+                  RSVP
+                </Text>
+              </View>
+            </Pressable>
+            <View style={styles.actionItem}>
+              <Ionicons name="share-social-outline" size={20} color={colors.icon} />
+            </View>
+            <View style={styles.actionItem}>
+              <Ionicons name="bookmark-outline" size={20} color={colors.icon} />
+            </View>
           </View>
         </View>
-      </View>
-    </Pressable>
+      </Pressable>
+    </UserContext.Provider>
   );
 }
 

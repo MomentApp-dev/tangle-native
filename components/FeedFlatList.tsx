@@ -5,7 +5,7 @@ import { generateFlatListData } from '@/utils/generateFlatListData';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
-import { FeedEventData } from '@/types/feed';
+import { MomentData } from '@/types/feed';
 
 /**
  * FeedFlatList displays a scrollable list of events
@@ -32,14 +32,15 @@ export function FeedFlatList() {
     setRefreshing(false);
   }, []);
 
-  const handlePress = useCallback((item: FeedEventData) => {
+  const handlePress = useCallback((item: MomentData) => {
     console.log('FeedItem pressed:', item.title);
     router.push({
-      pathname: '../pages/moment',
+      pathname: '/pages/moment',
       params: {
         title: item.title,
         description: item.description || '',
-        host: item.host,
+        host: item.host.username,
+        metadata: JSON.stringify(item.metadata),
       },
     });
   }, [router]);
@@ -50,7 +51,7 @@ export function FeedFlatList() {
       renderItem={({ item }) => (
         <FeedItem 
           item={item} 
-          onPress={() => handlePress(item)}
+          onPress={handlePress}
         />
       )}
       refreshControl={

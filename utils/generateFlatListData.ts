@@ -1,4 +1,4 @@
-import { FeedEventData } from '../types/feed';
+import { FeedEventData, MomentData } from '../types/feed';
 
 /**
  * Mock data generator for the event feed
@@ -9,57 +9,173 @@ import { FeedEventData } from '../types/feed';
  * - Data transformation layer
  * - Proper error handling
  */
-export function generateFlatListData(): FeedEventData[] {
-    const data: FeedEventData[] = [
+export function generateFlatListData(): MomentData[] {
+    const data: MomentData[] = [
         {
-            title: "Code sesh for app that makes a lot of money",
-            description: "Coding",
-            host: "@jdog",
-            isHost: true
-        },
-        {
-            title: "Hello World",
-            description: "Hello world",
-            host: "@kabirkapur",
-            isHost: false
-        }, 
-        {
-            title: "Hello World",
-            description: "Hello world",
-            host: "@kabirkapur",
-            isHost: false
-        },
-        {
+            id: "1",
             title: "gay sex orgy",
             description: "dick and balls",
-            host: "@corykum",
-            isHost: true
-        },
-        {
-            title: "Code sesh for app that makes a lot of money",
-            description: "Coding",
-            host: "@jdog",
-            isHost: true
-        },
-        {
-            title: "Hello World",
-            description: "Hello world",
-            host: "@kabirkapur",
-            isHost: false
-        }, 
-        {
-            title: "Hello World",
-            description: "Hello world",
-            host: "@kabirkapur",
-            isHost: false
-        },
-        {
-            title: "gay sex orgy",
-            description: "dick and balls",
-            host: "@corykum",
+            host: {
+                id: "1",
+                username: "@corykum",
+                name: "Cory Kum",
+            },
+            metadata: {
+                createdAt: "2021-01-01",
+                going: 0,
+                interested: 0,
+                notGoing: 243,
+                views: 1000,
+            },
             isHost: true
 
-        }
+        },
+        {
+            id: "2",
+            title: "Code sesh for app that makes a lot of money",
+            description: "Coding",
+            host: {
+                id: "2",
+                username: "@jdog",
+                name: "Jack Couchkushion",
+            },
+            metadata: {
+                createdAt: "2021-01-01",
+                going: 10000,
+                interested: 10000,
+                notGoing: 0,
+                views: 10000,
+            },
+            isHost: true
+        },
+        {
+            id: "3",
+            title: "Hello World",
+            description: "Hello world",
+            host: {
+                id: "3",
+                username: "@kabirkapur",
+                name: "Kabir Kapur",
+            },
+            metadata: {
+                createdAt: "2021-01-01",
+                going: 10000,
+                interested: 10000,
+                notGoing: 0,
+                views: 10000,
+            },
+            isHost: false
+        }, 
+        {
+            id: "4",
+            title: "Hello World",
+            description: "Hello world",
+            host: {
+                id: "3",
+                username: "@kabirkapur",
+                name: "Kabir Kapur",
+            },
+            metadata: {
+                createdAt: "2021-01-01",
+                going: 10000,
+                interested: 10000,
+                notGoing: 0,
+                views: 10000,
+            },
+            isHost: false
+        }, 
+        {
+            id: "5",
+            title: "gay sex orgy",
+            description: "dick and balls",
+            host: {
+                id: "1",
+                username: "@corykum",
+                name: "Cory Kum",
+            },
+            metadata: {
+                createdAt: "2021-01-01",
+                going: 0,
+                interested: 0,
+                notGoing: 243,
+                views: 1000,
+            },
+            isHost: true
+
+        },
+        {
+            id: "6",
+            title: "Code sesh for app that makes a lot of money",
+            description: "Coding",
+            host: {
+                id: "2",
+                username: "@jdog",
+                name: "Jack Couchkushion",
+            },
+            metadata: {
+                createdAt: "2021-01-01",
+                going: 10000,
+                interested: 10000,
+                notGoing: 0,
+                views: 10000,
+            },
+            isHost: true
+        },
+        {
+            id: "7",
+            title: "Hello World",
+            description: "Hello world",
+            host: {
+                id: "3",
+                username: "@kabirkapur",
+                name: "Kabir Kapur",
+            },
+            metadata: {
+                createdAt: "2021-01-01",
+                going: 10000,
+                interested: 10000,
+                notGoing: 0,
+                views: 10000,
+            },
+            isHost: false
+        },
+        {
+            id: "8",
+            title: "Hello World",
+            description: "Hello world",
+            host: {
+                id: "3",
+                username: "@kabirkapur",
+                name: "Kabir Kapur",
+            },
+            metadata: {
+                createdAt: "2021-01-01",
+                going: 10000,
+                interested: 10000,
+                notGoing: 0,
+                views: 10000,
+            },
+            isHost: false
+        },
+        {
+            id: "9",
+            title: "gay sex orgy",
+            description: "dick and balls",
+            host: {
+                id: "1",
+                username: "@corykum",
+                name: "Cory Kum",
+            },
+            metadata: {
+                createdAt: "2021-01-01",
+                going: 0,
+                interested: 0,
+                notGoing: 243,
+                views: 1000,
+            },
+            isHost: true
+
+        },
     ];
 
     return data;
