@@ -32,15 +32,15 @@ export function FeedFlatList() {
     setRefreshing(false);
   }, []);
 
-  const handlePress = useCallback((item: MomentData) => {
-    console.log('FeedItem pressed:', item.title);
+  const handleFeedItemPress = useCallback((momentData: MomentData) => {
+    console.log('FeedItem pressed. Metadata:', momentData.metadata);
     router.push({
-      pathname: '/pages/moment',
+      pathname: '/moment' as const,
       params: {
-        title: item.title,
-        description: item.description || '',
-        host: item.host.username,
-        metadata: JSON.stringify(item.metadata),
+        title: momentData.title,
+        description: momentData.description || '',
+        host: momentData.host.username,
+        metadata: JSON.stringify(momentData.metadata),
       },
     });
   }, [router]);
@@ -51,7 +51,7 @@ export function FeedFlatList() {
       renderItem={({ item }) => (
         <FeedItem 
           item={item} 
-          onPress={handlePress}
+          onPress={handleFeedItemPress}
         />
       )}
       refreshControl={

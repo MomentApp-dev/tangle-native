@@ -3,10 +3,11 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
-import { MomentData } from '@/types/feed';
 
-export default function Moment({ item }: { item: MomentData }) {
-  const { title, description, host } = useLocalSearchParams();
+export default function Moment() {
+  // gets URL parameters -- includes relevant metadata
+  const { title, description, host, metadata } = useLocalSearchParams();
+  const parsedMetadata = metadata ? JSON.parse(metadata as string) : null;
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const router = useRouter();
@@ -51,10 +52,9 @@ export default function Moment({ item }: { item: MomentData }) {
           </View>
 
           {/* Engagement Stats */}
-          // TODO: implement engagement stats
           <View style={[styles.stats, { borderColor: colors.icon }]}>
-            <Text style={[styles.statItem, { color: colors.text }]}><Text style={styles.statNumber}>100</Text> Going</Text>
-            <Text style={[styles.statItem, { color: colors.text }]}><Text style={styles.statNumber}>100</Text> Interested</Text>
+            <Text style={[styles.statItem, { color: colors.text }]}><Text style={styles.statNumber}>{ parsedMetadata?.going || 0 }</Text> Going</Text>
+            <Text style={[styles.statItem, { color: colors.text }]}><Text style={styles.statNumber}>{ parsedMetadata?.interested || 0 }</Text> Interested</Text>
           </View>
 
           {/* Action Buttons */}
