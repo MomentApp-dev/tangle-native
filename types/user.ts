@@ -4,4 +4,5 @@ export interface User {
     name: string;
     bio: string;
     isBusinessAccount: boolean;
+    profilePictureUrl?: string;
 }

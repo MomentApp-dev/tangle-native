@@ -7,6 +7,13 @@ import { events } from './mockEvents';
 import { rsvps } from './mockRsvps';
 import { follows } from './mockFollows';
 
+// Use this to set the current user for development/testing purposes
+let MOCK_CURRENT_USER_ID = 'user4';
+
+export const getCurrentUser = async (): Promise<User | null> => {
+  return users.find((user: User) => user.id === MOCK_CURRENT_USER_ID) || null;
+};
+
 export const getUser = (id: string): User | undefined => 
   users.find((user: User) => user.id === id);
 

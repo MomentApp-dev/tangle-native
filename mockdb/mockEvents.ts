@@ -3,7 +3,7 @@ import { Event } from '@/types/event';
 export const events: Event[] = [
     {
       id: 'event1',
-      hostId: 'cafe1',
+      hostId: 'user4',
       title: 'Open Mic Night',
       description: 'Join us for an evening of local talent! All performers welcome.',
       date: '2024-03-15T19:00:00Z',
@@ -14,7 +14,7 @@ export const events: Event[] = [
     },
     {
       id: 'event2',
-      hostId: 'cafe1',
+      hostId: 'user4',
       title: 'Coffee Tasting Workshop',
       description: 'Sample our new spring coffee selection. Learn about brewing methods.',
       date: '2024-03-20T15:00:00Z',
@@ -25,7 +25,7 @@ export const events: Event[] = [
     },
     {
       id: 'event3',
-      hostId: 'cafe1',
+      hostId: 'user4',
       title: 'Poetry Reading',
       description: 'Monthly poetry night featuring local writers.',
       date: '2024-02-15T19:00:00Z',

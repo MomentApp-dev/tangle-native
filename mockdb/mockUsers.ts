@@ -7,6 +7,7 @@ export const users: User[] = [
         name: 'Kabir Kapur',
         bio: 'Hello World enthusiast',
         isBusinessAccount: false,
+        profilePictureUrl: 'https://api.uifaces.co/our-content/donated/FJkauyEa.jpg'
     },
     {
         id: 'user2',
@@ -14,6 +15,7 @@ export const users: User[] = [
         name: 'JDog',
         bio: 'Making apps that make money',
         isBusinessAccount: false,
+        profilePictureUrl: 'https://api.uifaces.co/our-content/donated/KtCFjlD4.jpg'
     },
     {
         id: 'user3',
@@ -21,6 +23,7 @@ export const users: User[] = [
         name: 'Cory Kum',
         bio: 'Living life to the fullest',
         isBusinessAccount: false,
+        profilePictureUrl: 'https://api.uifaces.co/our-content/donated/n4Ngwvi7.jpg'
     },
     {
         id: 'user4',
@@ -28,5 +31,6 @@ export const users: User[] = [
         name: 'Odd Fellows Cafe',
         bio: 'Your neighborhood cafe & event space',
         isBusinessAccount: true,
+        profilePictureUrl: 'https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=400&auto=format&fit=crop&q=60'
     }
 ];
