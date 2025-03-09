@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { FlatList, StyleSheet, RefreshControl } from 'react-native';
 import { FeedItem } from './FeedItem';
-import { generateFlatListData } from '@/utils/generateFlatListData';
+import { generateFlatListData } from '@/mockdb/generateFlatListData';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
