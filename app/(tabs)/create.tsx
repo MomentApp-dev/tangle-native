@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { StyleSheet, ScrollView, TextInput, Pressable, Text } from 'react-native';
+import { StyleSheet, ScrollView, TextInput, Pressable, Text, View, Switch } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { MomentData } from '@/types/feed';
+import { Ionicons } from '@expo/vector-icons';
 
 export default function CreateScreen() {
   const colorScheme = useColorScheme();
@@ -13,6 +14,7 @@ export default function CreateScreen() {
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [isPublic, setIsPublic] = useState(true);
 
   const handleCreate = () => {
     // TODO: Replace with actual user data and API call
@@ -21,6 +23,7 @@ export default function CreateScreen() {
       title,
       description,
       isHost: true,
+      isPublic,
       host: {
         id: '1',
         name: 'Current User',
@@ -73,6 +76,37 @@ export default function CreateScreen() {
           numberOfLines={4}
           textAlignVertical="top"
         />
+
+        {/* Privacy Toggle */}
+        <View style={styles.privacyContainer}>
+          <View style={styles.privacyLeft}>
+            <Text style={[styles.privacyLabel, { color: colors.text }]}>
+              {isPublic ? 'Public Event' : 'Private Event'}
+            </Text>
+            <Text style={[styles.privacyDescription, { color: colors.icon }]}>
+              {isPublic 
+                ? 'Anyone can see and join this event' 
+                : 'Only people you invite can see and join'}
+            </Text>
+          </View>
+          <View style={styles.privacyRight}>
+            <View style={styles.iconContainer}>
+              <Ionicons 
+                name={isPublic ? "globe-outline" : "lock-closed-outline"} 
+                size={20} 
+                color={colors.icon}
+                style={styles.privacyIcon}
+              />
+            </View>
+            <Switch
+              value={isPublic}
+              onValueChange={setIsPublic}
+              trackColor={{ false: colors.border, true: colors.tint }}
+              thumbColor={colors.background}
+              ios_backgroundColor={colors.border}
+            />
+          </View>
+        </View>
 
         <Pressable
           style={({ pressed }) => [
@@ -131,5 +165,36 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: '600',
+  },
+  // New styles for privacy toggle
+  privacyContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 24,
+    marginBottom: 8,
+    paddingVertical: 8,
+  },
+  privacyLeft: {
+    flex: 1,
+    marginRight: 16,
+  },
+  privacyRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  privacyLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  privacyDescription: {
+    fontSize: 14,
+  },
+  iconContainer: {
+    marginRight: 12,
+  },
+  privacyIcon: {
+    marginTop: 2,
   },
 });

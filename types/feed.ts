@@ -4,6 +4,7 @@ export interface MomentData {
   description?: string;
   date?: Date;
   isHost: boolean;
+  isPublic: boolean;
   host: {
     id: string;
     name: string;
