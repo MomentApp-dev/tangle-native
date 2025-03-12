@@ -18,28 +18,26 @@ export default function CreateScreen() {
 
   const handleCreate = () => {
     // TODO: Replace with actual user data and API call
+    console.log('Creating a new moment');
     const newMoment: MomentData = {
-      id: Date.now().toString(),
       title,
       description,
-      isHost: true,
       isPublic,
-      host: {
-        id: '1',
-        name: 'Current User',
-        username: '@currentuser',
-      },
-      metadata: {
-        createdAt: new Date().toISOString(),
-        going: 0,
-        interested: 0,
-        notGoing: 0,
-        views: 0,
-      }
+      host: "1",
+      startTime: 1,
+      endTime: 1,
+      location: "1",
     };
-
-    console.log('Creating new moment:', newMoment);
-    // TODO: Add API call to create moment
+    
+    fetch('http://localhost:8080/api/events', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newMoment),
+    }).catch(error => {
+      console.error(error);
+    });
     
     // Navigate back to home screen
     router.push('/(tabs)');
