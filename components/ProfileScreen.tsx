@@ -169,18 +169,24 @@ export default function ProfileScreen({ user, isOwnProfile = false }: ProfileScr
             </View>
           </View>
           <View style={styles.statsContainer}>
-            <View style={styles.statItem}>
+            <Pressable 
+              style={styles.statItem}
+              onPress={() => router.push(`/(profile)/${user.username}/followers`)}
+            >
               <Text style={[styles.statNumber, { color: colors.text }]}>
                 {followCounts.followers}
               </Text>
               <Text style={[styles.statLabel, { color: colors.icon }]}>Followers</Text>
-            </View>
-            <View style={styles.statItem}>
+            </Pressable>
+            <Pressable 
+              style={styles.statItem}
+              onPress={() => router.push(`/(profile)/${user.username}/following`)}
+            >
               <Text style={[styles.statNumber, { color: colors.text }]}>
                 {followCounts.following}
               </Text>
               <Text style={[styles.statLabel, { color: colors.icon }]}>Following</Text>
-            </View>
+            </Pressable>
           </View>
         </View>
 
