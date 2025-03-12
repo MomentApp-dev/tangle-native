@@ -34,20 +34,18 @@ export default function RootLayout() {
     <NativeBaseProvider>
       <GluestackUIProvider mode="light">
         <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(tabs)" />
-            <Stack.Screen 
-              name="(profile)" 
-              options={{
-                headerShown: true,
-                animation: 'slide_from_right',
-              }}
-            />
-            <Stack.Screen name="moment" />
-            <Stack.Screen name="+not-found" />
+          <Stack screenOptions={{ 
+            headerShown: false,
+            animation: 'slide_from_right',
+          }}>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="(profile)" options={{ headerShown: false }} />
+            <Stack.Screen name="moment" options={{ headerShown: false }} />
+            <Stack.Screen name="+not-found" options={{ headerShown: false }} />
           </Stack>
           <StatusBar style="auto" />
-        </ThemeProvider></GluestackUIProvider>
-      </NativeBaseProvider>
+        </ThemeProvider>
+      </GluestackUIProvider>
+    </NativeBaseProvider>
   );
 }

@@ -1,84 +1,39 @@
-import { View, Text, StyleSheet, SafeAreaView, Pressable } from 'react-native';
-import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useColorScheme } from '@/hooks/useColorScheme';
-import { Colors } from '@/constants/Colors';
-import { Ionicons } from '@expo/vector-icons';
+import React, { useState, useEffect } from 'react';
+import { View, Text } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+import { getUserByUsername } from '@/mockdb/mockApis';
+import { User } from '@/types/user';
+import ProfileScreen from '@/components/ProfileScreen';
 
-export default function OtherUserProfileScreen() {
-  const { username } = useLocalSearchParams();
-  const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? 'light'];
-  const router = useRouter();
-  
-  console.log('👥 Other User Profile Screen Mounted for:', username);
+export default function UserProfileScreen() {
+  const { username } = useLocalSearchParams<{ username: string }>();
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const handleBack = () => {
-    router.back();
-  };
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        if (username) {
+          const userData = await getUserByUsername(username);
+          setUser(userData);
+        }
+      } catch (error) {
+        console.error('Error loading user data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
-      {/* Header */}
-      <View style={[styles.header, { borderBottomColor: colors.icon }]}>
-        <Pressable onPress={handleBack} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={colors.text} />
-        </Pressable>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Profile</Text>
+    loadUserData();
+  }, [username]);
+
+  if (isLoading || !user) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Loading...</Text>
       </View>
+    );
+  }
 
-      <View style={styles.container}>
-        <Text style={styles.text}>Profile Page</Text>
-        <Text style={styles.username}>@{username}</Text>
-        {/* Other user specific actions */}
-        <View style={styles.actions}>
-          <Text style={styles.actionText}>Follow</Text>
-        </View>
-      </View>
-    </SafeAreaView>
-  );
-}
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-  },
-  backButton: {
-    padding: 8,
-    marginRight: 8,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-  },
-  text: {
-    fontSize: 24,
-    marginBottom: 12,
-  },
-  username: {
-    fontSize: 18,
-    opacity: 0.7,
-    marginBottom: 20,
-  },
-  actions: {
-    marginTop: 20,
-    padding: 10,
-    backgroundColor: '#007AFF',
-    borderRadius: 8,
-  },
-  actionText: {
-    color: 'white',
-    fontSize: 16,
-  },
-}); 
+  return <ProfileScreen user={user} isOwnProfile={false} />;
+} 

@@ -8,7 +8,7 @@ import { rsvps } from './mockRsvps';
 import { follows } from './mockFollows';
 
 // Use this to set the current user for development/testing purposes
-let MOCK_CURRENT_USER_ID = 'user4';
+let MOCK_CURRENT_USER_ID = 'user1';
 
 export const getCurrentUser = async (): Promise<User | null> => {
   return users.find((user: User) => user.id === MOCK_CURRENT_USER_ID) || null;
@@ -17,9 +17,13 @@ export const getCurrentUser = async (): Promise<User | null> => {
 export const getUser = (id: string): User | undefined => 
   users.find((user: User) => user.id === id);
 
-export async function getUserByUsername(username: string): Promise<User | null> {
-  return users.find((user: User) => user.username.toLowerCase() === username.toLowerCase()) || null;
-} 
+export const getUserByUsername = async (username: string) => {
+  const user = users.find(u => u.username.toLowerCase() === username.toLowerCase());
+  if (!user) {
+    throw new Error(`User not found: ${username}`);
+  }
+  return user;
+};
 
 export const getUserEvents = (userId: string) => {
   const hostedEvents = events.filter((event: Event) => event.hostId === userId);
