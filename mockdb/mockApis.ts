@@ -17,6 +17,10 @@ export const getCurrentUser = async (): Promise<User | null> => {
 export const getUser = (id: string): User | undefined => 
   users.find((user: User) => user.id === id);
 
+export async function getUserByUsername(username: string): Promise<User | null> {
+  return users.find((user: User) => user.username.toLowerCase() === username.toLowerCase()) || null;
+} 
+
 export const getUserEvents = (userId: string) => {
   const hostedEvents = events.filter((event: Event) => event.hostId === userId);
   const rsvpdEvents = rsvps
@@ -68,4 +72,4 @@ export const isFollowing = (followerId: string, followedId: string): boolean => 
   return follows.some(
     (follow: Follow) => follow.followerId === followerId && follow.followedId === followedId
   );
-}; 
+};

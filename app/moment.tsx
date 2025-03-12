@@ -3,6 +3,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
+import { useProfileNavigation } from '@/hooks/useProfileNavigation';
 
 export default function Moment() {
   // gets URL parameters -- includes relevant metadata
@@ -11,9 +12,16 @@ export default function Moment() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const router = useRouter();
+  const { navigateToProfile } = useProfileNavigation();
 
   const handleBack = () => {
     router.back();
+  };
+
+  const handleProfilePress = () => {
+    if (typeof host === 'string') {
+      navigateToProfile(host.toLowerCase().replace(/\s/g, ''));
+    }
   };
 
   return (
@@ -29,16 +37,21 @@ export default function Moment() {
       <ScrollView style={styles.container}>
         <View style={styles.content}>
           {/* Host Profile Section */}
-          <View style={styles.profileSection}>
+          <Pressable 
+            style={styles.profileSection}
+            onPress={handleProfilePress}
+          >
             <Image 
               source={{ uri: `https://ui-avatars.com/api/?name=${encodeURIComponent(host as string)}&background=random` }}
               style={styles.avatar}
             />
             <View style={styles.profileInfo}>
               <Text style={[styles.hostName, { color: colors.text }]}>{host}</Text>
-              <Text style={[styles.hostHandle, { color: colors.text }]}>@{(host as string).toLowerCase().replace(/\s/g, '')}</Text>
+              <Text style={[styles.hostHandle, { color: colors.text }]}>
+                @{typeof host === 'string' ? host.toLowerCase().replace(/\s/g, '') : ''}
+              </Text>
             </View>
-          </View>
+          </Pressable>
 
           {/* Event Content */}
           <View style={styles.eventContent}>

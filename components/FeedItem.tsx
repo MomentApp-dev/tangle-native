@@ -6,6 +6,7 @@ import { FeedEventData, MomentData } from '../types/feed';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { propsFlattener } from 'native-base/lib/typescript/hooks/useThemeProps/propsFlattener';
+import { useProfileNavigation } from '@/hooks/useProfileNavigation';
 
 interface FeedItemProps {
   /** The event data to display */
@@ -46,9 +47,14 @@ export function FeedItem({ item, onPress }: FeedItemProps) {
   const hostName = formatHostName(item.host.username);
   const isHost = item.isHost;
   const [metadata, setMetadata] = useState(item.metadata);
+  const { navigateToProfile } = useProfileNavigation();
 
   const handlePress = () => {
     onPress(item);
+  };
+
+  const handleProfilePress = () => {
+    navigateToProfile(item.host.username.replace('@', ''));
   };
 
   /**
@@ -72,17 +78,19 @@ export function FeedItem({ item, onPress }: FeedItemProps) {
         onPress={handlePress}
       >
         {/* Avatar Section */}
-        <View style={styles.avatarContainer}>
+        <Pressable onPress={handleProfilePress} style={styles.avatarContainer}>
           {renderAvatar()}
-        </View>
+        </Pressable>
 
         {/* Content Section */}
         <View style={styles.content}>
           {/* Host Information */}
           <View style={styles.header}>
-            <Text style={[styles.hostName, { color: colors.text }]} numberOfLines={1}>
-              {hostName}
-            </Text>
+            <Pressable onPress={handleProfilePress}>
+              <Text style={[styles.hostName, { color: colors.text }]} numberOfLines={1}>
+                {hostName}
+              </Text>
+            </Pressable>
             <Ionicons 
               name="checkmark-circle" 
               size={16} 
