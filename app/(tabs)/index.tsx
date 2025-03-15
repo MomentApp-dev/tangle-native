@@ -3,6 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { FeedFlatList } from '@/components/FeedFlatList';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
+import { Header } from '@/components/Header';
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
@@ -13,6 +14,7 @@ export default function HomeScreen() {
       style={[styles.container, { backgroundColor: colors.background }]} 
       edges={['top']}
     >
+      <Header />
       <FeedFlatList />
     </SafeAreaView>
   );

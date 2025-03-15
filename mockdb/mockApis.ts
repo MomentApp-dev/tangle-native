@@ -124,3 +124,92 @@ export const getFeedItems = async (): Promise<FeedItem[]> => {
     new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
 };
+
+export const searchMoments = async (query: string, filter: string = 'all') => {
+  const normalizedQuery = query.toLowerCase();
+  
+  let results: any[] = [];
+  
+  switch (filter) {
+    case 'moments':
+      results = moments.filter(moment => 
+        moment.title.toLowerCase().includes(normalizedQuery) ||
+        moment.description?.toLowerCase().includes(normalizedQuery)
+      );
+      return results.map(moment => ({
+        id: `created-${moment.id}`,
+        type: 'created',
+        momentId: moment.id,
+        momentTitle: moment.title,
+        momentTime: moment.date,
+        createdAt: moment.createdAt,
+        userId: moment.hostId
+      }));
+      
+    case 'users':
+      return users
+        .filter(user => 
+          user.name.toLowerCase().includes(normalizedQuery) ||
+          user.username.toLowerCase().includes(normalizedQuery)
+        )
+        .map(user => ({
+          id: `user-${user.id}`,
+          type: 'user',
+          userId: user.id,
+          name: user.name,
+          username: user.username,
+          profilePictureUrl: user.profilePictureUrl
+        }));
+        
+    case 'location':
+      return moments
+        .filter(moment => 
+          moment.location.toLowerCase().includes(normalizedQuery)
+        )
+        .map(moment => ({
+          id: `created-${moment.id}`,
+          type: 'created',
+          momentId: moment.id,
+          momentTitle: moment.title,
+          momentTime: moment.date,
+          createdAt: moment.createdAt,
+          userId: moment.hostId
+        }));
+        
+    case 'all':
+    default:
+      // Search moments
+      const momentResults = moments
+        .filter(moment => 
+          moment.title.toLowerCase().includes(normalizedQuery) ||
+          moment.description?.toLowerCase().includes(normalizedQuery) ||
+          moment.location.toLowerCase().includes(normalizedQuery)
+        )
+        .map(moment => ({
+          id: `created-${moment.id}`,
+          type: 'created',
+          momentId: moment.id,
+          momentTitle: moment.title,
+          momentTime: moment.date,
+          createdAt: moment.createdAt,
+          userId: moment.hostId
+        }));
+        
+      // Search users
+      const userResults = users
+        .filter(user => 
+          user.name.toLowerCase().includes(normalizedQuery) ||
+          user.username.toLowerCase().includes(normalizedQuery)
+        )
+        .map(user => ({
+          id: `user-${user.id}`,
+          type: 'user',
+          userId: user.id,
+          name: user.name,
+          username: user.username,
+          profilePictureUrl: user.profilePictureUrl
+        }));
+        
+      return [...momentResults, ...userResults];
+  }
+};
