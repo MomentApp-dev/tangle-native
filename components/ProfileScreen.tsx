@@ -95,36 +95,20 @@ export default function ProfileScreen({ user, isOwnProfile = false }: ProfileScr
             });
           }}
         >
-          <Text style={[styles.eventTitle, { color: colors.text }]}>
-            {event.title}
-          </Text>
+          <View style={styles.eventHeader}>
+            <Text style={[styles.eventTitle, { color: colors.text }]}>
+              {event.title}
+            </Text>
+            <Pressable style={styles.menuButton}>
+              <Ionicons name="ellipsis-horizontal" size={20} color={colors.icon} />
+            </Pressable>
+          </View>
           <Text style={[styles.eventDate, { color: colors.icon }]}>
             {new Date(event.date).toLocaleDateString()}
           </Text>
           <Text style={[styles.eventDescription, { color: colors.text }]}>
             {event.description}
           </Text>
-          <View style={styles.actions}>
-            <Pressable style={styles.actionItem}>
-              <View style={[styles.rsvpButton, { backgroundColor: colors.text }]}>
-                <Ionicons 
-                  name="calendar-outline" 
-                  size={16} 
-                  color={colors.background} 
-                  style={styles.rsvpIcon}
-                />
-                <Text style={[styles.rsvpText, { color: colors.background }]}>
-                  RSVP
-                </Text>
-              </View>
-            </Pressable>
-            <View style={styles.actionItem}>
-              <Ionicons name="share-social-outline" size={20} color={colors.icon} />
-            </View>
-            <View style={styles.actionItem}>
-              <Ionicons name="bookmark-outline" size={20} color={colors.icon} />
-            </View>
-          </View>
         </Pressable>
       );
     });
@@ -349,10 +333,20 @@ const styles = StyleSheet.create({
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: '#38444d',
   },
+  eventHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 4,
+  },
   eventTitle: {
     fontSize: 18,
     fontWeight: '600',
-    marginBottom: 4,
+    flex: 1,
+    marginRight: 8,
+  },
+  menuButton: {
+    padding: 4,
   },
   eventDate: {
     fontSize: 14,
@@ -361,43 +355,6 @@ const styles = StyleSheet.create({
   eventDescription: {
     fontSize: 15,
     lineHeight: 20,
-    marginBottom: 12,
-  },
-  actions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 12,
-    justifyContent: 'space-between',
-    paddingRight: 32,
-  },
-  actionItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  rsvpButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.2,
-        shadowRadius: 1,
-      },
-      android: {
-        elevation: 2,
-      },
-    }),
-  },
-  rsvpIcon: {
-    marginRight: 6,
-  },
-  rsvpText: {
-    fontSize: 14,
-    fontWeight: '600',
   },
   emptyState: {
     padding: 20,

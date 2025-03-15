@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 import { View, Text, StyleSheet, Pressable, Platform, Image } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -24,14 +24,8 @@ function formatHostName(host: string): string {
   return host.replace('hosted by ', '');
 }
 
-export const UserContext = React.createContext({
-  metadata: {
-    createdAt: '',
-    going: 0,
-    interested: 0,
-    notGoing: 0,
-    views: 0,
-  }
+export const UserContext = React.createContext<{ metadata: MomentData['metadata'] }>({
+  metadata: undefined
 });
 
 /**
@@ -46,7 +40,6 @@ export function FeedItem({ item, onPress }: FeedItemProps) {
   const colors = Colors[colorScheme ?? 'light'];
   const hostName = formatHostName(item.host.username);
   const isHost = item.isHost;
-  const [metadata, setMetadata] = useState(item.metadata);
   const { navigateToProfile } = useProfileNavigation();
 
   const handlePress = () => {
@@ -72,7 +65,7 @@ export function FeedItem({ item, onPress }: FeedItemProps) {
   };
 
   return (
-    <UserContext.Provider value={{ metadata: metadata }}>
+    <UserContext.Provider value={{ metadata: item.metadata }}>
       <Pressable 
         style={[styles.container, { backgroundColor: colors.background }]} 
         onPress={handlePress}
@@ -86,27 +79,32 @@ export function FeedItem({ item, onPress }: FeedItemProps) {
         <View style={styles.content}>
           {/* Host Information */}
           <View style={styles.header}>
-            <Pressable onPress={handleProfilePress}>
-              <Text style={[styles.hostName, { color: colors.text }]} numberOfLines={1}>
-                {hostName}
+            <View style={styles.headerLeft}>
+              <Pressable onPress={handleProfilePress}>
+                <Text style={[styles.hostName, { color: colors.text }]} numberOfLines={1}>
+                  {hostName}
+                </Text>
+              </Pressable>
+              <Ionicons 
+                name="checkmark-circle" 
+                size={16} 
+                color="#1D9BF0" 
+                style={styles.verifiedBadge}
+              />
+              {
+                isHost && <Text style={[styles.eventLabel, { color: colors.icon }]}>
+                  is hosting an event
+                </Text>
+              }
+              {
+                !isHost && <Text style={[styles.eventLabel, { color: colors.icon }]}>
+                is attending an event
               </Text>
+              }
+            </View>
+            <Pressable style={styles.menuButton}>
+              <Ionicons name="ellipsis-horizontal" size={20} color={colors.icon} />
             </Pressable>
-            <Ionicons 
-              name="checkmark-circle" 
-              size={16} 
-              color="#1D9BF0" 
-              style={styles.verifiedBadge}
-            />
-            {
-              isHost && <Text style={[styles.eventLabel, { color: colors.icon }]}>
-                is hosting an event
-              </Text>
-            }
-            {
-              !isHost && <Text style={[styles.eventLabel, { color: colors.icon }]}>
-              is attending an event
-            </Text>
-            }
           </View>
 
           {/* Event Information */}
@@ -119,29 +117,6 @@ export function FeedItem({ item, onPress }: FeedItemProps) {
               {item.description}
             </Text>
           )}
-
-          {/* Interactive Elements */}
-          <View style={styles.actions}>
-            <Pressable style={styles.actionItem}>
-              <View style={[styles.rsvpButton, { backgroundColor: colors.text }]}>
-                <Ionicons 
-                  name="calendar-outline" 
-                  size={16} 
-                  color={colors.background} 
-                  style={styles.rsvpIcon}
-                />
-                <Text style={[styles.rsvpText, { color: colors.background }]}>
-                  RSVP
-                </Text>
-              </View>
-            </Pressable>
-            <View style={styles.actionItem}>
-              <Ionicons name="share-social-outline" size={20} color={colors.icon} />
-            </View>
-            <View style={styles.actionItem}>
-              <Ionicons name="bookmark-outline" size={20} color={colors.icon} />
-            </View>
-          </View>
         </View>
       </Pressable>
     </UserContext.Provider>
@@ -180,6 +155,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 4,
+    justifyContent: 'space-between',
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
   },
   hostName: {
     fontSize: 15,
@@ -190,6 +171,10 @@ const styles = StyleSheet.create({
   },
   eventLabel: {
     fontSize: 15,
+  },
+  menuButton: {
+    padding: 4,
+    marginLeft: 8,
   },
 
   // Event content styling
@@ -203,43 +188,5 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 20,
     marginBottom: 12,
-  },
-
-  // Interactive elements styling
-  actions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 12,
-    justifyContent: 'space-between',
-    paddingRight: 32,
-  },
-  actionItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  rsvpButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    ...Platform.select({
-      ios: {
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.2,
-        shadowRadius: 1,
-      },
-      android: {
-        elevation: 2,
-      },
-    }),
-  },
-  rsvpIcon: {
-    marginRight: 6,
-  },
-  rsvpText: {
-    fontSize: 14,
-    fontWeight: '600',
   },
 }); 
