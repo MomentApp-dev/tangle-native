@@ -43,7 +43,8 @@ export function FeedItem({ item, onPress }: FeedItemProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [moment, setMoment] = useState<Moment | null>(null);
-  const [user, setUser] = useState<User | null>(null);
+  const [displayUser, setDisplayUser] = useState<User | null>(null);
+  const [host, setHost] = useState<User | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -52,14 +53,21 @@ export function FeedItem({ item, onPress }: FeedItemProps) {
         setError(null);
         
         const momentData = getMoment(item.momentId);
-        const userData = getUser(item.userId);
+        if (!momentData) {
+          throw new Error('Failed to load moment data');
+        }
 
-        if (!momentData || !userData) {
-          throw new Error('Failed to load moment or user data');
+        // Always load both the acting user and the host
+        const userData = getUser(item.userId);
+        const hostData = getUser(momentData.hostId);
+        
+        if (!userData || !hostData) {
+          throw new Error('Failed to load user data');
         }
 
         setMoment(momentData);
-        setUser(userData);
+        setDisplayUser(userData);
+        setHost(hostData);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An error occurred');
       } finally {
@@ -78,7 +86,7 @@ export function FeedItem({ item, onPress }: FeedItemProps) {
     );
   }
 
-  if (error || !moment || !user) {
+  if (error || !moment || !displayUser || !host) {
     return (
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <Text style={[styles.errorText, { color: colors.text }]}>
@@ -89,28 +97,39 @@ export function FeedItem({ item, onPress }: FeedItemProps) {
   }
 
   const handlePress = () => {
-    onPress(item);
+    if (moment && host) {
+      onPress({
+        ...item,
+        userId: host.id  // Override with host's ID for the moment page
+      });
+    }
   };
 
   const handleProfilePress = () => {
-    navigateToProfile(user.username);
+    if (displayUser) {
+      navigateToProfile(displayUser.username);
+    }
   };
 
-  /**
-   * Renders the appropriate avatar based on the user
-   * - Uses the user's profile picture if available
-   * - Falls back to a generated avatar if no profile picture is available
-   */
   const renderAvatar = () => {
     return (
       <Image 
         source={{ 
-          uri: user.profilePictureUrl || 
-               `https://ui-avatars.com/api/?name=${user.username}&background=random` 
+          uri: displayUser.profilePictureUrl || 
+               `https://ui-avatars.com/api/?name=${displayUser.username}&background=random` 
         }}
         style={styles.avatar}
       />
     );
+  };
+
+  const getActionText = () => {
+    if (item.type === 'created') return 'is hosting';
+    if (item.type === 'rsvpd') {
+      if (item.rsvpStatus === 'maybe') return 'is considering attending';
+      if (item.rsvpStatus === 'going') return 'is attending';
+    }
+    return 'is attending';  // Default case
   };
 
   return (
@@ -142,10 +161,10 @@ export function FeedItem({ item, onPress }: FeedItemProps) {
                   styles.hostName,
                   { color: colorScheme === 'dark' ? '#E5E7EB' : '#4B5563' }
                 ]} numberOfLines={1}>
-                  {user.name}
+                  {displayUser.name}
                 </Text>
               </Pressable>
-              {user.isBusinessAccount && (
+              {displayUser.isBusinessAccount && (
                 <Ionicons 
                   name="checkmark-circle" 
                   size={14} 
@@ -157,11 +176,7 @@ export function FeedItem({ item, onPress }: FeedItemProps) {
                 styles.eventLabel,
                 { color: colorScheme === 'dark' ? '#9CA3AF' : '#71767B' }
               ]} numberOfLines={1}>
-                {item.type === 'created' 
-                  ? 'is hosting'
-                  : item.rsvpStatus === 'maybe'
-                  ? 'is considering attending'
-                  : 'is attending'}
+                {getActionText()}
               </Text>
             </View>
           </View>

@@ -58,25 +58,27 @@ export function FeedFlatList() {
 
   const handleFeedItemPress = useCallback((item: FeedItemType) => {
     const moment = getMoment(item.momentId);
-    const host = getUser(item.userId);
-    
-    if (moment && host) {
-      router.push({
-        pathname: '/moment' as const,
-        params: {
-          title: moment.title,
-          description: moment.description || '',
-          host: `@${host.username}`,
-          metadata: JSON.stringify({
-            createdAt: moment.createdAt,
-            going: getRSVPCount(moment.id),
-            interested: rsvps.filter(r => r.momentId === moment.id && r.status === 'maybe').length,
-            location: moment.location,
-            date: moment.date,
-            maxCapacity: moment.maxCapacity
-          })
-        },
-      });
+    if (moment) {
+      const host = getUser(moment.hostId);
+      
+      if (host) {
+        router.push({
+          pathname: '/moment' as const,
+          params: {
+            title: moment.title,
+            description: moment.description || '',
+            host: `@${host.username}`,
+            metadata: JSON.stringify({
+              createdAt: moment.createdAt,
+              going: getRSVPCount(moment.id),
+              interested: rsvps.filter(r => r.momentId === moment.id && r.status === 'maybe').length,
+              location: moment.location,
+              date: moment.date,
+              maxCapacity: moment.maxCapacity
+            })
+          },
+        });
+      }
     }
   }, [router]);
 
