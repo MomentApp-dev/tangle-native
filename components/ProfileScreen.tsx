@@ -4,10 +4,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
-import { getUserEvents, getFollowCounts, getUser } from '@/mockdb/mockApis';
+import { getUserMoments, getFollowCounts, getUser } from '@/mockdb/mockApis';
 import { User } from '@/types/user';
 import { router } from 'expo-router';
-import { Event } from '@/types/event';
+import { Moment } from '@/types/moment';
 
 interface ProfileScreenProps {
   user: User;
@@ -18,7 +18,7 @@ export default function ProfileScreen({ user, isOwnProfile = false }: ProfileScr
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
   const [activeTab, setActiveTab] = useState('hosting');
-  const [userEvents, setUserEvents] = useState<any>(null);
+  const [userMoments, setUserMoments] = useState<any>(null);
   const [followCounts, setFollowCounts] = useState<{ followers: number; following: number }>({ followers: 0, following: 0 });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -26,9 +26,9 @@ export default function ProfileScreen({ user, isOwnProfile = false }: ProfileScr
     const loadUserData = async () => {
       try {
         if (user) {
-          const events = getUserEvents(user.id);
+          const moments = getUserMoments(user.id);
           const counts = getFollowCounts(user.id);
-          setUserEvents(events);
+          setUserMoments(moments);
           setFollowCounts(counts);
           setActiveTab(user.isBusinessAccount ? 'hosting' : 'going');
         }
@@ -59,62 +59,56 @@ export default function ProfileScreen({ user, isOwnProfile = false }: ProfileScr
     return labels[tab] || tab;
   };
 
-  const renderEventList = (events: Event[]) => {
-    if (!events || events.length === 0) {
+  const renderMomentList = (moments: Moment[]) => {
+    if (!moments || moments.length === 0) {
       return (
         <View style={styles.emptyState}>
           <Text style={[styles.emptyStateText, { color: colors.icon }]}>
-            No events to display
+            No moments to display
           </Text>
         </View>
       );
     }
 
-    return events.map(event => {
-      const host = getUser(event.hostId)!;
+    return moments.map(moment => {
+      const host = getUser(moment.hostId)!;
       
       return (
         <Pressable 
-          key={event.id} 
+          key={moment.id} 
           style={[styles.eventCard, { backgroundColor: colors.background }]}
           onPress={() => {
             router.push({
               pathname: '/moment' as const,
               params: {
-                title: event.title,
-                description: event.description || '',
+                title: moment.title,
+                description: moment.description || '',
                 host: `@${host.username}`,
-                metadata: JSON.stringify({
-                  createdAt: event.createdAt,
-                  going: 0, // TODO: Get actual counts
-                  interested: 0,
-                  notGoing: 0,
-                  views: Math.floor(Math.random() * 1000),
-                }),
+                createdAt: moment.createdAt,
               },
             });
           }}
         >
           <View style={styles.eventHeader}>
             <Text style={[styles.eventTitle, { color: colors.text }]}>
-              {event.title}
+              {moment.title}
             </Text>
             <Pressable style={styles.menuButton}>
               <Ionicons name="ellipsis-horizontal" size={20} color={colors.icon} />
             </Pressable>
           </View>
           <Text style={[styles.eventDate, { color: colors.icon }]}>
-            {new Date(event.date).toLocaleDateString()}
+            {new Date(moment.date).toLocaleDateString()}
           </Text>
           <Text style={[styles.eventDescription, { color: colors.text }]}>
-            {event.description}
+            {moment.description}
           </Text>
         </Pressable>
       );
     });
   };
 
-  if (isLoading || !user || !userEvents) {
+  if (isLoading || !user || !userMoments) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
         <View style={styles.loadingState}>
@@ -219,7 +213,7 @@ export default function ProfileScreen({ user, isOwnProfile = false }: ProfileScr
 
         {/* Events List */}
         <View style={styles.eventsContainer}>
-          {renderEventList(userEvents[activeTab] || [])}
+          {renderMomentList(userMoments[activeTab] || [])}
         </View>
       </ScrollView>
     </SafeAreaView>

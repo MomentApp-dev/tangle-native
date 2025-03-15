@@ -6,4 +6,5 @@ export interface FeedItem {
     momentTime: string;
     createdAt: string;
     userId: string;
+    rsvpStatus?: 'going' | 'maybe';
 }

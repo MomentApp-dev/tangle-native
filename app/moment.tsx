@@ -1,3 +1,4 @@
+import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, Pressable, Platform, SafeAreaView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -7,6 +8,7 @@ import { useProfileNavigation } from '@/hooks/useProfileNavigation';
 import { getUserByUsername } from '@/mockdb/mockApis';
 import { useEffect, useState } from 'react';
 import { User } from '@/types/user';
+import { getRelativeTime } from '@/utils/dateUtils';
 
 export default function Moment() {
   // gets URL parameters -- includes relevant metadata
@@ -82,24 +84,80 @@ export default function Moment() {
           {/* Event Content */}
           <View style={styles.eventContent}>
             <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
+            <Text style={[styles.timePosted, { color: colors.icon }]}>
+              Posted {getRelativeTime(parsedMetadata?.createdAt)}
+            </Text>
             <Text style={[styles.description, { color: colors.text }]}>{description}</Text>
           </View>
 
           {/* Event Metadata */}
           <View style={[styles.metadata, { borderColor: colors.icon }]}>
-            <Text style={[styles.metadataText, { color: colors.icon }]}>
-              {new Date(parsedMetadata?.createdAt).toLocaleString()}
-            </Text>
+            <View style={styles.metadataRow}>
+              <Ionicons name="calendar" size={18} color={colors.icon} />
+              <View style={styles.metadataContent}>
+                <Text style={[styles.metadataLabel, { color: colors.text }]}>Date & Time</Text>
+                <Text style={[styles.metadataText, { color: colors.icon }]}>
+                  {parsedMetadata?.date ? new Date(parsedMetadata.date).toLocaleString(undefined, {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  }) : 'Date not specified'}
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.metadataRow}>
+              <Ionicons name="location" size={18} color={colors.icon} />
+              <View style={styles.metadataContent}>
+                <Text style={[styles.metadataLabel, { color: colors.text }]}>Location</Text>
+                <Text style={[styles.metadataText, { color: colors.icon }]}>
+                  {parsedMetadata?.location || 'Location not specified'}
+                </Text>
+              </View>
+            </View>
+
+            <View style={styles.metadataRow}>
+              <Ionicons name="people" size={18} color={colors.icon} />
+              <View style={styles.metadataContent}>
+                <Text style={[styles.metadataLabel, { color: colors.text }]}>Attendance</Text>
+                <Text style={[styles.metadataText, { color: colors.icon }]}>
+                  <Text style={{ color: colors.tint }}>{parsedMetadata?.going || 0}</Text> of {parsedMetadata?.maxCapacity || 0} spots filled
+                  {parsedMetadata?.interested > 0 && ` · ${parsedMetadata.interested} interested`}
+                </Text>
+                <View style={styles.progressBar}>
+                  <View 
+                    style={[
+                      styles.progressFill, 
+                      { 
+                        backgroundColor: colors.tint,
+                        width: `${Math.min(((parsedMetadata?.going || 0) / (parsedMetadata?.maxCapacity || 1)) * 100, 100)}%`
+                      }
+                    ]} 
+                  />
+                </View>
+              </View>
+            </View>
           </View>
 
           {/* Engagement Stats */}
           <View style={[styles.stats, { borderColor: colors.icon }]}>
-            <Text style={[styles.statItem, { color: colors.text }]}>
-              <Text style={styles.statNumber}>{ parsedMetadata?.going || 0 }</Text> Going
-            </Text>
-            <Text style={[styles.statItem, { color: colors.text }]}>
-              <Text style={styles.statNumber}>{ parsedMetadata?.interested || 0 }</Text> Interested
-            </Text>
+            <View style={styles.statItem}>
+              <Text style={[styles.statNumber, { color: colors.text }]}>{parsedMetadata?.going || 0}</Text>
+              <Text style={[styles.statLabel, { color: colors.icon }]}>Going</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={[styles.statNumber, { color: colors.text }]}>{parsedMetadata?.interested || 0}</Text>
+              <Text style={[styles.statLabel, { color: colors.icon }]}>Interested</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={[styles.statNumber, { color: colors.text }]}>
+                {Math.max((parsedMetadata?.maxCapacity || 0) - (parsedMetadata?.going || 0), 0)}
+              </Text>
+              <Text style={[styles.statLabel, { color: colors.icon }]}>Spots Left</Text>
+            </View>
           </View>
 
           {/* Action Buttons */}
@@ -176,32 +234,57 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     lineHeight: 28,
   },
+  timePosted: {
+    fontSize: 14,
+    marginBottom: 12,
+  },
   description: {
     fontSize: 16,
     lineHeight: 22,
   },
   metadata: {
-    paddingVertical: 12,
+    paddingVertical: 16,
     borderTopWidth: StyleSheet.hairlineWidth,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    marginBottom: 12,
+    marginBottom: 16,
+    gap: 16,
+  },
+  metadataRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+  },
+  metadataContent: {
+    flex: 1,
+  },
+  metadataLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 2,
   },
   metadataText: {
     fontSize: 15,
-    opacity: 0.8,
+    opacity: 0.9,
+    lineHeight: 20,
   },
   stats: {
     flexDirection: 'row',
-    paddingVertical: 12,
+    paddingVertical: 16,
     borderBottomWidth: StyleSheet.hairlineWidth,
     marginBottom: 16,
-    gap: 24,
   },
   statItem: {
-    fontSize: 15,
+    flex: 1,
+    alignItems: 'center',
   },
   statNumber: {
+    fontSize: 20,
     fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: 13,
+    textTransform: 'uppercase',
   },
   actions: {
     gap: 16,
@@ -234,5 +317,16 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     padding: 8,
+  },
+  progressBar: {
+    height: 4,
+    backgroundColor: '#38444d20',
+    borderRadius: 2,
+    marginTop: 8,
+    overflow: 'hidden',
+  },
+  progressFill: {
+    height: '100%',
+    borderRadius: 2,
   },
 }); 

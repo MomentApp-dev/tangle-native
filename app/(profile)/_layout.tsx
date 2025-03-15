@@ -1,8 +1,6 @@
 import { Stack } from 'expo-router';
 
-export default function ProfileLayout() {
-  console.log('🏗️ Profile Layout Mounted');
-  
+export default function ProfileLayout() {  
   return (
     <Stack
       screenOptions={{

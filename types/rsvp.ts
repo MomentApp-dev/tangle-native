@@ -1,7 +1,7 @@
 export interface RSVP {
     id: string;
     userId: string;
-    eventId: string;
+    momentId: string;
     status: 'going' | 'maybe';
     createdAt: string;
 }

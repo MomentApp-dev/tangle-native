@@ -33,7 +33,7 @@ export const getUserMoments = (userId: string) => {
   const hostedMoments = moments.filter((moment: Moment) => moment.hostId === userId);
   const rsvpdMoments = rsvps
     .filter((rsvp: RSVP) => rsvp.userId === userId && rsvp.status === 'going')
-    .map((rsvp: RSVP) => moments.find((moment: Moment) => moment.id === rsvp.eventId))
+    .map((rsvp: RSVP) => moments.find((moment: Moment) => moment.id === rsvp.momentId))
     .filter((moment: Moment | undefined) => moment !== undefined) as Moment[];
   
   return {
@@ -46,7 +46,7 @@ export const getUserMoments = (userId: string) => {
 
 export const getMomentRSVPs = (momentId: string) => {
   return rsvps
-    .filter((rsvp: RSVP) => rsvp.eventId === momentId)
+    .filter((rsvp: RSVP) => rsvp.momentId === momentId)
     .map((rsvp: RSVP) => ({
       ...rsvp,
       user: getUser(rsvp.userId),
@@ -54,7 +54,7 @@ export const getMomentRSVPs = (momentId: string) => {
 };
 
 export const getRSVPCount = (momentId: string): number => {
-  return rsvps.filter((rsvp: RSVP) => rsvp.eventId === momentId && rsvp.status === 'going').length;
+  return rsvps.filter((rsvp: RSVP) => rsvp.momentId === momentId && rsvp.status === 'going').length;
 };
 
 export const getFollowers = (userId: string): (User | undefined)[] => {
@@ -98,7 +98,7 @@ export const getFeedItems = async (): Promise<FeedItem[]> => {
   });
 
   rsvps.forEach(rsvp => {
-    const moment = moments.find(m => m.id === rsvp.eventId);
+    const moment = moments.find(m => m.id === rsvp.momentId);
     if (moment) {
       feedItems.push({
         id: `rsvpd-${rsvp.userId}-${moment.id}`,
@@ -107,7 +107,8 @@ export const getFeedItems = async (): Promise<FeedItem[]> => {
         momentTitle: moment.title,
         momentTime: moment.date,
         createdAt: rsvp.createdAt,
-        userId: rsvp.userId
+        userId: rsvp.userId,
+        rsvpStatus: rsvp.status
       });
     }
   });
