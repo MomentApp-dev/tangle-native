@@ -46,13 +46,14 @@ export default function ProfileScreen({ user, isOwnProfile = false }: ProfileScr
     if (user?.isBusinessAccount) {
       return ['hosting', 'hosted'];
     }
-    return ['going', 'went', 'hosting', 'hosted'];
+    return ['going', 'considering', 'went', 'hosting', 'hosted'];
   };
 
   const getTabLabel = (tab: string) => {
     const labels: { [key: string]: string } = {
-      going: 'Going to',
-      went: "Went to",
+      going: 'Attending',
+      considering: 'Considering',
+      went: "Attended",
       hosting: 'Hosting',
       hosted: 'Hosted'
     };
@@ -307,13 +308,13 @@ const styles = StyleSheet.create({
   tab: {
     flex: 1,
     paddingVertical: 16,
-    paddingHorizontal: 4,
+    paddingHorizontal: 2,
     alignItems: 'center',
     borderBottomWidth: 2,
     borderBottomColor: 'transparent',
   },
   tabText: {
-    fontSize: 13,
+    fontSize: 11,
     fontWeight: '600',
     textAlign: 'center',
   },

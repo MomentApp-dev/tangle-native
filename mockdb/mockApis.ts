@@ -31,16 +31,22 @@ export const getMoment = (id: string): Moment | undefined =>
 
 export const getUserMoments = (userId: string) => {
   const hostedMoments = moments.filter((moment: Moment) => moment.hostId === userId);
-  const rsvpdMoments = rsvps
+  const goingMoments = rsvps
     .filter((rsvp: RSVP) => rsvp.userId === userId && rsvp.status === 'going')
+    .map((rsvp: RSVP) => moments.find((moment: Moment) => moment.id === rsvp.momentId))
+    .filter((moment: Moment | undefined) => moment !== undefined) as Moment[];
+  
+  const consideringMoments = rsvps
+    .filter((rsvp: RSVP) => rsvp.userId === userId && rsvp.status === 'maybe')
     .map((rsvp: RSVP) => moments.find((moment: Moment) => moment.id === rsvp.momentId))
     .filter((moment: Moment | undefined) => moment !== undefined) as Moment[];
   
   return {
     hosting: hostedMoments.filter((moment: Moment) => moment.status === 'upcoming'),
     hosted: hostedMoments.filter((moment: Moment) => moment.status === 'past'),
-    going: rsvpdMoments.filter((moment: Moment) => moment.status === 'upcoming'),
-    went: rsvpdMoments.filter((moment: Moment) => moment.status === 'past'),
+    going: goingMoments.filter((moment: Moment) => moment.status === 'upcoming'),
+    went: goingMoments.filter((moment: Moment) => moment.status === 'past'),
+    considering: consideringMoments.filter((moment: Moment) => moment.status === 'upcoming')
   };
 };
 
