@@ -4,6 +4,9 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { useProfileNavigation } from '@/hooks/useProfileNavigation';
+import { getUserByUsername } from '@/mockdb/mockApis';
+import { useEffect, useState } from 'react';
+import { User } from '@/types/user';
 
 export default function Moment() {
   // gets URL parameters -- includes relevant metadata
@@ -13,6 +16,22 @@ export default function Moment() {
   const colors = Colors[colorScheme ?? 'light'];
   const router = useRouter();
   const { navigateToProfile } = useProfileNavigation();
+  const [hostUser, setHostUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const loadHostUser = async () => {
+      if (typeof host === 'string') {
+        try {
+          const username = host.replace('@', '').trim();
+          const user = await getUserByUsername(username);
+          setHostUser(user);
+        } catch (error) {
+          console.error('Error loading host user:', error);
+        }
+      }
+    };
+    loadHostUser();
+  }, [host]);
 
   const handleBack = () => {
     router.back();
@@ -33,7 +52,7 @@ export default function Moment() {
         <Pressable onPress={handleBack} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color={colors.text} />
         </Pressable>
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Event</Text>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>Moment</Text>
       </View>
 
       <ScrollView style={styles.container}>
@@ -44,13 +63,18 @@ export default function Moment() {
             onPress={handleProfilePress}
           >
             <Image 
-              source={{ uri: `https://ui-avatars.com/api/?name=${encodeURIComponent(host as string)}&background=random` }}
+              source={{ 
+                uri: hostUser?.profilePictureUrl || 
+                     `https://ui-avatars.com/api/?name=${encodeURIComponent(host as string)}&background=random` 
+              }}
               style={styles.avatar}
             />
             <View style={styles.profileInfo}>
-              <Text style={[styles.hostName, { color: colors.text }]}>{host}</Text>
-              <Text style={[styles.hostHandle, { color: colors.text }]}>
-                @{typeof host === 'string' ? host.toLowerCase().replace(/\s/g, '') : ''}
+              <Text style={[styles.hostName, { color: colors.text }]}>
+                {hostUser?.name || host}
+              </Text>
+              <Text style={[styles.hostHandle, { color: colors.icon }]}>
+                @{typeof host === 'string' ? host.replace('@', '').toLowerCase().trim() : ''}
               </Text>
             </View>
           </Pressable>
@@ -63,13 +87,19 @@ export default function Moment() {
 
           {/* Event Metadata */}
           <View style={[styles.metadata, { borderColor: colors.icon }]}>
-            <Text style={[styles.metadataText, { color: colors.text }]}>7:00 PM · Today</Text>
+            <Text style={[styles.metadataText, { color: colors.icon }]}>
+              {new Date(parsedMetadata?.createdAt).toLocaleString()}
+            </Text>
           </View>
 
           {/* Engagement Stats */}
           <View style={[styles.stats, { borderColor: colors.icon }]}>
-            <Text style={[styles.statItem, { color: colors.text }]}><Text style={styles.statNumber}>{ parsedMetadata?.going || 0 }</Text> Going</Text>
-            <Text style={[styles.statItem, { color: colors.text }]}><Text style={styles.statNumber}>{ parsedMetadata?.interested || 0 }</Text> Interested</Text>
+            <Text style={[styles.statItem, { color: colors.text }]}>
+              <Text style={styles.statNumber}>{ parsedMetadata?.going || 0 }</Text> Going
+            </Text>
+            <Text style={[styles.statItem, { color: colors.text }]}>
+              <Text style={styles.statNumber}>{ parsedMetadata?.interested || 0 }</Text> Interested
+            </Text>
           </View>
 
           {/* Action Buttons */}
