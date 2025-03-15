@@ -1,8 +1,21 @@
-import { Event } from '@/types/event';
+import { Moment } from '@/types/moment';
+import { users } from './mockUsers';
 
-export const events: Event[] = [
+// Helper to get host info
+const getHostInfo = (hostId: string) => {
+  const host = users.find(u => u.id === hostId)!;
+  return {
+    id: host.id,
+    username: host.username,
+    name: host.name,
+    verified: host.isBusinessAccount,
+    profilePictureUrl: host.profilePictureUrl,
+  };
+};
+
+export const moments: Moment[] = [
     {
-      id: 'event1',
+      id: 'moment1',
       hostId: 'user4',
       title: 'Open Mic Night',
       description: 'Join us for an evening of local talent! All performers welcome.',
@@ -10,10 +23,10 @@ export const events: Event[] = [
       maxCapacity: 50,
       location: 'Odd Fellows Cafe',
       status: 'upcoming',
-      createdAt: '2024-02-01T08:00:00Z',
+      createdAt: '2024-02-01T08:00:00Z'
     },
     {
-      id: 'event2',
+      id: 'moment2',
       hostId: 'user4',
       title: 'Coffee Tasting Workshop',
       description: 'Sample our new spring coffee selection. Learn about brewing methods.',
@@ -21,10 +34,10 @@ export const events: Event[] = [
       maxCapacity: 20,
       location: 'Odd Fellows Cafe',
       status: 'upcoming',
-      createdAt: '2024-02-05T09:00:00Z',
+      createdAt: '2024-02-05T09:00:00Z'
     },
     {
-      id: 'event3',
+      id: 'moment3',
       hostId: 'user4',
       title: 'Poetry Reading',
       description: 'Monthly poetry night featuring local writers.',
@@ -32,10 +45,10 @@ export const events: Event[] = [
       maxCapacity: 40,
       location: 'Odd Fellows Cafe',
       status: 'past',
-      createdAt: '2024-01-15T10:00:00Z',
+      createdAt: '2024-01-15T10:00:00Z'
     },
     {
-      id: 'event4',
+      id: 'moment4',
       hostId: 'user2',
       title: 'Hello World',
       description: 'Hello world',
@@ -43,10 +56,10 @@ export const events: Event[] = [
       maxCapacity: 30,
       location: 'Virtual',
       status: 'upcoming',
-      createdAt: '2024-02-10T08:00:00Z',
+      createdAt: '2024-02-10T08:00:00Z'
     },
     {
-      id: 'event5',
+      id: 'moment5',
       hostId: 'user2',
       title: 'Hello World',
       description: 'Hello world',
@@ -54,10 +67,10 @@ export const events: Event[] = [
       maxCapacity: 30,
       location: 'Virtual',
       status: 'upcoming',
-      createdAt: '2024-02-11T08:00:00Z',
+      createdAt: '2024-02-11T08:00:00Z'
     },
     {
-      id: 'event6',
+      id: 'moment6',
       hostId: 'user3',
       title: 'gay sex orgy',
       description: 'dick and balls',
@@ -65,10 +78,10 @@ export const events: Event[] = [
       maxCapacity: 20,
       location: 'Secret Location',
       status: 'upcoming',
-      createdAt: '2024-02-12T10:00:00Z',
+      createdAt: '2024-02-12T10:00:00Z'
     },
     {
-      id: 'event7',
+      id: 'moment7',
       hostId: 'user1',
       title: 'Code sesh for app that makes a lot of money',
       description: 'Coding',
@@ -76,10 +89,10 @@ export const events: Event[] = [
       maxCapacity: 10,
       location: 'Startup HQ',
       status: 'upcoming',
-      createdAt: '2024-02-13T09:00:00Z',
+      createdAt: '2024-02-13T09:00:00Z'
     },
     {
-      id: 'event8',
+      id: 'moment8',
       hostId: 'user2',
       title: 'Hello World',
       description: 'Hello world',
@@ -87,10 +100,10 @@ export const events: Event[] = [
       maxCapacity: 30,
       location: 'Virtual',
       status: 'upcoming',
-      createdAt: '2024-02-14T08:00:00Z',
+      createdAt: '2024-02-14T08:00:00Z'
     },
     {
-      id: 'event9',
+      id: 'moment9',
       hostId: 'user2',
       title: 'Hello World',
       description: 'Hello world',
@@ -98,10 +111,10 @@ export const events: Event[] = [
       maxCapacity: 30,
       location: 'Virtual',
       status: 'upcoming',
-      createdAt: '2024-02-15T08:00:00Z',
+      createdAt: '2024-02-15T08:00:00Z'
     },
     {
-      id: 'event10',
+      id: 'moment10',
       hostId: 'user3',
       title: 'gay sex orgy',
       description: 'dick and balls',
@@ -109,6 +122,6 @@ export const events: Event[] = [
       maxCapacity: 20,
       location: 'Secret Location',
       status: 'upcoming',
-      createdAt: '2024-02-16T10:00:00Z',
+      createdAt: '2024-02-16T10:00:00Z'
     }
-];
+]; 

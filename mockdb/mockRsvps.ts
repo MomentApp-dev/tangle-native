@@ -12,7 +12,7 @@ export const rsvps: RSVP[] = [
         id: 'rsvp2',
         userId: 'user2', // jdog
         eventId: 'event6', // gay sex orgy
-        status: 'not_going',
+        status: 'going',
         createdAt: '2024-02-12T11:00:00Z',
     },
     {

@@ -1,4 +1,4 @@
-export interface Event {
+export interface Moment {
     id: string;
     hostId: string;
     title: string;

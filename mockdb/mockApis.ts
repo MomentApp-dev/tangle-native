@@ -1,10 +1,10 @@
 import { User } from '@/types/user';
-import { Event } from '@/types/event';
+import { Moment } from '@/types/moment';
 import { RSVP } from '@/types/rsvp';
 import { Follow } from '@/types/follow';
-import { MomentData } from '@/types/feed';
+import { FeedItem } from '@/types/feedItem';
 import { users } from './mockUsers';
-import { events } from './mockEvents';
+import { moments } from './mockMoments';
 import { rsvps } from './mockRsvps';
 import { follows } from './mockFollows';
 
@@ -26,32 +26,35 @@ export const getUserByUsername = async (username: string) => {
   return user;
 };
 
-export const getUserEvents = (userId: string) => {
-  const hostedEvents = events.filter((event: Event) => event.hostId === userId);
-  const rsvpdEvents = rsvps
+export const getMoment = (id: string): Moment | undefined =>
+  moments.find((moment: Moment) => moment.id === id);
+
+export const getUserMoments = (userId: string) => {
+  const hostedMoments = moments.filter((moment: Moment) => moment.hostId === userId);
+  const rsvpdMoments = rsvps
     .filter((rsvp: RSVP) => rsvp.userId === userId && rsvp.status === 'going')
-    .map((rsvp: RSVP) => events.find((event: Event) => event.id === rsvp.eventId))
-    .filter((event: Event | undefined) => event !== undefined) as Event[];
+    .map((rsvp: RSVP) => moments.find((moment: Moment) => moment.id === rsvp.eventId))
+    .filter((moment: Moment | undefined) => moment !== undefined) as Moment[];
   
   return {
-    hosting: hostedEvents.filter((event: Event) => event.status === 'upcoming'),
-    hosted: hostedEvents.filter((event: Event) => event.status === 'past'),
-    going: rsvpdEvents.filter((event: Event) => event.status === 'upcoming'),
-    went: rsvpdEvents.filter((event: Event) => event.status === 'past'),
+    hosting: hostedMoments.filter((moment: Moment) => moment.status === 'upcoming'),
+    hosted: hostedMoments.filter((moment: Moment) => moment.status === 'past'),
+    going: rsvpdMoments.filter((moment: Moment) => moment.status === 'upcoming'),
+    went: rsvpdMoments.filter((moment: Moment) => moment.status === 'past'),
   };
 };
 
-export const getEventRSVPs = (eventId: string) => {
+export const getMomentRSVPs = (momentId: string) => {
   return rsvps
-    .filter((rsvp: RSVP) => rsvp.eventId === eventId)
+    .filter((rsvp: RSVP) => rsvp.eventId === momentId)
     .map((rsvp: RSVP) => ({
       ...rsvp,
       user: getUser(rsvp.userId),
     }));
 };
 
-export const getRSVPCount = (eventId: string): number => {
-  return rsvps.filter((rsvp: RSVP) => rsvp.eventId === eventId && rsvp.status === 'going').length;
+export const getRSVPCount = (momentId: string): number => {
+  return rsvps.filter((rsvp: RSVP) => rsvp.eventId === momentId && rsvp.status === 'going').length;
 };
 
 export const getFollowers = (userId: string): (User | undefined)[] => {
@@ -79,37 +82,38 @@ export const isFollowing = (followerId: string, followedId: string): boolean => 
   );
 };
 
-export const getFeedData = (): MomentData[] => {
-  const upcomingEvents = events.filter(event => event.status === 'upcoming');
-  
-  return upcomingEvents.map(event => {
-    const host = users.find(u => u.id === event.hostId)!;
-    const goingCount = rsvps.filter(r => r.eventId === event.id && r.status === 'going').length;
-    const maybeCount = rsvps.filter(r => r.eventId === event.id && r.status === 'maybe').length;
-    const notGoingCount = rsvps.filter(r => r.eventId === event.id && r.status === 'not_going').length;
+export const getFeedItems = async (): Promise<FeedItem[]> => {
+  const feedItems: FeedItem[] = [];
 
-    const momentData: MomentData = {
-      id: event.id,
-      title: event.title,
-      description: event.description,
-      date: new Date(event.date),
-      isHost: true, // We'll update this when we have current user context
-      host: {
-        id: host.id,
-        username: `@${host.username}`,
-        name: host.name,
-        verified: host.isBusinessAccount,
-        profilePictureUrl: host.profilePictureUrl,
-      },
-      metadata: {
-        createdAt: event.createdAt,
-        going: goingCount,
-        interested: maybeCount,
-        notGoing: notGoingCount,
-        views: Math.floor(Math.random() * 1000),
-      }
-    };
-
-    return momentData;
+  moments.forEach(moment => {
+    feedItems.push({
+      id: `created-${moment.id}`,
+      type: 'created',
+      momentId: moment.id,
+      momentTitle: moment.title,
+      momentTime: moment.date,
+      createdAt: moment.createdAt,
+      userId: moment.hostId
+    });
   });
+
+  rsvps.forEach(rsvp => {
+    const moment = moments.find(m => m.id === rsvp.eventId);
+    if (moment) {
+      feedItems.push({
+        id: `rsvpd-${rsvp.userId}-${moment.id}`,
+        type: 'rsvpd',
+        momentId: moment.id,
+        momentTitle: moment.title,
+        momentTime: moment.date,
+        createdAt: rsvp.createdAt,
+        userId: rsvp.userId
+      });
+    }
+  });
+
+  // Sort by createdAt in descending order (newest first)
+  return feedItems.sort((a, b) => 
+    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
 };
