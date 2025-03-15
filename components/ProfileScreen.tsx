@@ -4,9 +4,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
-import { getUserEvents, getFollowCounts } from '@/mockdb/mockApis';
+import { getUserEvents, getFollowCounts, getUser } from '@/mockdb/mockApis';
 import { User } from '@/types/user';
 import { router } from 'expo-router';
+import { Event } from '@/types/event';
 
 interface ProfileScreenProps {
   user: User;
@@ -58,7 +59,7 @@ export default function ProfileScreen({ user, isOwnProfile = false }: ProfileScr
     return labels[tab] || tab;
   };
 
-  const renderEventList = (events: any[]) => {
+  const renderEventList = (events: Event[]) => {
     if (!events || events.length === 0) {
       return (
         <View style={styles.emptyState}>
@@ -69,43 +70,64 @@ export default function ProfileScreen({ user, isOwnProfile = false }: ProfileScr
       );
     }
 
-    return events.map(event => (
-      <View 
-        key={event.id} 
-        style={[styles.eventCard, { backgroundColor: colors.background }]}
-      >
-        <Text style={[styles.eventTitle, { color: colors.text }]}>
-          {event.title}
-        </Text>
-        <Text style={[styles.eventDate, { color: colors.icon }]}>
-          {new Date(event.date).toLocaleDateString()}
-        </Text>
-        <Text style={[styles.eventDescription, { color: colors.text }]}>
-          {event.description}
-        </Text>
-        <View style={styles.actions}>
-          <Pressable style={styles.actionItem}>
-            <View style={[styles.rsvpButton, { backgroundColor: colors.text }]}>
-              <Ionicons 
-                name="calendar-outline" 
-                size={16} 
-                color={colors.background} 
-                style={styles.rsvpIcon}
-              />
-              <Text style={[styles.rsvpText, { color: colors.background }]}>
-                RSVP
-              </Text>
+    return events.map(event => {
+      const host = getUser(event.hostId)!;
+      
+      return (
+        <Pressable 
+          key={event.id} 
+          style={[styles.eventCard, { backgroundColor: colors.background }]}
+          onPress={() => {
+            router.push({
+              pathname: '/moment' as const,
+              params: {
+                title: event.title,
+                description: event.description || '',
+                host: `@${host.username}`,
+                metadata: JSON.stringify({
+                  createdAt: event.createdAt,
+                  going: 0, // TODO: Get actual counts
+                  interested: 0,
+                  notGoing: 0,
+                  views: Math.floor(Math.random() * 1000),
+                }),
+              },
+            });
+          }}
+        >
+          <Text style={[styles.eventTitle, { color: colors.text }]}>
+            {event.title}
+          </Text>
+          <Text style={[styles.eventDate, { color: colors.icon }]}>
+            {new Date(event.date).toLocaleDateString()}
+          </Text>
+          <Text style={[styles.eventDescription, { color: colors.text }]}>
+            {event.description}
+          </Text>
+          <View style={styles.actions}>
+            <Pressable style={styles.actionItem}>
+              <View style={[styles.rsvpButton, { backgroundColor: colors.text }]}>
+                <Ionicons 
+                  name="calendar-outline" 
+                  size={16} 
+                  color={colors.background} 
+                  style={styles.rsvpIcon}
+                />
+                <Text style={[styles.rsvpText, { color: colors.background }]}>
+                  RSVP
+                </Text>
+              </View>
+            </Pressable>
+            <View style={styles.actionItem}>
+              <Ionicons name="share-social-outline" size={20} color={colors.icon} />
             </View>
-          </Pressable>
-          <View style={styles.actionItem}>
-            <Ionicons name="share-social-outline" size={20} color={colors.icon} />
+            <View style={styles.actionItem}>
+              <Ionicons name="bookmark-outline" size={20} color={colors.icon} />
+            </View>
           </View>
-          <View style={styles.actionItem}>
-            <Ionicons name="bookmark-outline" size={20} color={colors.icon} />
-          </View>
-        </View>
-      </View>
-    ));
+        </Pressable>
+      );
+    });
   };
 
   if (isLoading || !user || !userEvents) {

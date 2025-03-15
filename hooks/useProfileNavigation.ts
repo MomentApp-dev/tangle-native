@@ -4,21 +4,23 @@ import { getCurrentUser } from '@/mockdb/mockApis';
 export function useProfileNavigation() {
   const navigateToProfile = async (username: string) => {
     try {
+      // Normalize the username by removing '@' and converting to lowercase
+      const normalizedUsername = username.replace('@', '').toLowerCase();
       const currentUser = await getCurrentUser();
       
       // Log navigation attempt
       console.log('🧭 Profile Navigation:', {
-        clickedUsername: username,
+        clickedUsername: normalizedUsername,
         currentUser: currentUser?.username,
-        isSelf: currentUser?.username === username
+        isSelf: currentUser?.username?.toLowerCase() === normalizedUsername
       });
 
-      if (currentUser?.username === username) {
+      if (currentUser?.username?.toLowerCase() === normalizedUsername) {
         // If it's the current user, go to MyProfile tab
         router.navigate('/(tabs)/myProfile');
       } else {
         // If it's another user, go to their profile page
-        router.push(`/(profile)/${username}`);
+        router.push(`/(profile)/${normalizedUsername}`);
       }
     } catch (error) {
       console.error('Error navigating to profile:', error);

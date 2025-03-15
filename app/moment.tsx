@@ -20,7 +20,9 @@ export default function Moment() {
 
   const handleProfilePress = () => {
     if (typeof host === 'string') {
-      navigateToProfile(host.toLowerCase().replace(/\s/g, ''));
+      // Remove the '@' symbol if present and any spaces
+      const username = host.replace('@', '').replace(/\s/g, '');
+      navigateToProfile(username);
     }
   };
 

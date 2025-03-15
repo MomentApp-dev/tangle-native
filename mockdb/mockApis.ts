@@ -2,13 +2,14 @@ import { User } from '@/types/user';
 import { Event } from '@/types/event';
 import { RSVP } from '@/types/rsvp';
 import { Follow } from '@/types/follow';
+import { MomentData } from '@/types/feed';
 import { users } from './mockUsers';
 import { events } from './mockEvents';
 import { rsvps } from './mockRsvps';
 import { follows } from './mockFollows';
 
 // Use this to set the current user for development/testing purposes
-let MOCK_CURRENT_USER_ID = 'user1';
+let MOCK_CURRENT_USER_ID = 'user2';
 
 export const getCurrentUser = async (): Promise<User | null> => {
   return users.find((user: User) => user.id === MOCK_CURRENT_USER_ID) || null;
@@ -76,4 +77,39 @@ export const isFollowing = (followerId: string, followedId: string): boolean => 
   return follows.some(
     (follow: Follow) => follow.followerId === followerId && follow.followedId === followedId
   );
+};
+
+export const getFeedData = (): MomentData[] => {
+  const upcomingEvents = events.filter(event => event.status === 'upcoming');
+  
+  return upcomingEvents.map(event => {
+    const host = users.find(u => u.id === event.hostId)!;
+    const goingCount = rsvps.filter(r => r.eventId === event.id && r.status === 'going').length;
+    const maybeCount = rsvps.filter(r => r.eventId === event.id && r.status === 'maybe').length;
+    const notGoingCount = rsvps.filter(r => r.eventId === event.id && r.status === 'not_going').length;
+
+    const momentData: MomentData = {
+      id: event.id,
+      title: event.title,
+      description: event.description,
+      date: new Date(event.date),
+      isHost: true, // We'll update this when we have current user context
+      host: {
+        id: host.id,
+        username: `@${host.username}`,
+        name: host.name,
+        verified: host.isBusinessAccount,
+        profilePictureUrl: host.profilePictureUrl,
+      },
+      metadata: {
+        createdAt: event.createdAt,
+        going: goingCount,
+        interested: maybeCount,
+        notGoing: notGoingCount,
+        views: Math.floor(Math.random() * 1000),
+      }
+    };
+
+    return momentData;
+  });
 };

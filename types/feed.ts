@@ -1,21 +1,22 @@
 export interface MomentData {
+  id: string;
   title: string;
   description?: string;
   date?: Date;
-  isPublic: boolean;
-  host: string;
-  startTime: number;
-  endTime: number;
-  location: string;
-  metadata?: {
-    createdAt: string,
-    going: number,
-    interested: number,
-    notGoing: number,
-    views: number,
-  };
-  replyTo?: {
+  isHost: boolean;
+  host: {
+    id: string;
     username: string;
+    name: string;
+    verified?: boolean;
+    profilePictureUrl?: string;
+  };
+  metadata?: {
+    createdAt: string;
+    going: number;
+    interested: number;
+    notGoing: number;
+    views: number;
   };
 }
 

@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { FlatList, StyleSheet, RefreshControl } from 'react-native';
 import { FeedItem } from './FeedItem';
-import { generateFlatListData } from '@/mockdb/generateFlatListData';
+import { getFeedData } from '@/mockdb/mockApis';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
@@ -15,7 +15,7 @@ import { MomentData } from '@/types/feed';
  * - Event item interaction
  */
 export function FeedFlatList() {
-  const [data, setData] = useState(() => generateFlatListData());
+  const [data, setData] = useState(() => getFeedData());
   const [refreshing, setRefreshing] = useState(false);
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme ?? 'light'];
@@ -27,7 +27,7 @@ export function FeedFlatList() {
    */
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    const newData = generateFlatListData();
+    const newData = getFeedData();
     setData(newData);
     setRefreshing(false);
   }, []);
@@ -61,7 +61,7 @@ export function FeedFlatList() {
           tintColor={colors.text}
         />
       }
-      keyExtractor={(item, index) => `${item.title}-${index}`}
+      keyExtractor={(item) => item.id}
       style={[styles.list, { backgroundColor: colors.background }]}
     />
   );

@@ -59,13 +59,13 @@ export function FeedItem({ item, onPress }: FeedItemProps) {
 
   /**
    * Renders the appropriate avatar based on the host
-   * - Custom mustache icon for Cory
-   * - Generated avatar for other users
+   * - Uses the host's profile picture if available
+   * - Falls back to a generated avatar if no profile picture is available
    */
   const renderAvatar = () => {
     return (
       <Image 
-        source={{ uri: `https://ui-avatars.com/api/?name=${hostName}&background=random` }}
+        source={{ uri: item.host.profilePictureUrl || `https://ui-avatars.com/api/?name=${hostName}&background=random` }}
         style={styles.avatar}
       />
     );
